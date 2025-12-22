@@ -35,8 +35,8 @@ public abstract class AuditableBaseEntity {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(nullable = false)
     @LastModifiedDate
+    @Column(nullable = false)
     private Instant lastModifiedAt;
 
     @Column(updatable = false)

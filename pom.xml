@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.karan</groupId>
-	<artifactId>craftingtable</artifactId>
+	<artifactId>crafting-table</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Crafting Table</name>
+	<name>crafting-table</name>
 	<description>Crafting Table — a Spring Boot based AI platform for building, assembling, and scaling ideas into production-ready applications, piece by piece.</description>
 	<url/>
 	<licenses>

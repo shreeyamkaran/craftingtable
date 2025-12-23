@@ -14,6 +14,6 @@ public interface ProjectMapper {
 
     ProjectSummaryResponseDTO toProjectSummaryResponseDTO(ProjectEntity projectEntity);
 
-    List<ProjectSummaryResponseDTO> toProjectSummaryResponseDTOList(List<ProjectEntity> projectEntities);
+    List<ProjectSummaryResponseDTO> toProjectSummaryResponseDTOList(List<ProjectEntity> projectEntityList);
 
 }

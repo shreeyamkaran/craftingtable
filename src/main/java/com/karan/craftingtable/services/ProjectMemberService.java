@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ProjectMemberService {
 
-    List<ProjectMemberResponseDTO> getProjectMembers(long projectId);
+    List<ProjectMemberResponseDTO> getProjectMembers(Long projectId);
 
     ProjectMemberResponseDTO inviteProjectMember(Long projectId, InviteProjectMemberRequestDTO inviteProjectMemberRequestDTO);
 

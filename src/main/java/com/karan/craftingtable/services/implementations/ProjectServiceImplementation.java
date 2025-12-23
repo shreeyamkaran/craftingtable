@@ -17,8 +17,8 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class ProjectServiceImplementation implements ProjectService {
 
     private final ProjectRepository projectRepository;
@@ -44,7 +44,7 @@ public class ProjectServiceImplementation implements ProjectService {
         UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
         ProjectEntity projectEntity = ProjectEntity.builder()
                 .name(projectRequestDTO.name())
-                .owner(currentLoggedInUser)
+                .projectOwner(currentLoggedInUser)
                 .build();
         projectEntity = projectRepository.save(projectEntity);
         return projectMapper.toProjectResponseDTO(projectEntity);
@@ -54,7 +54,7 @@ public class ProjectServiceImplementation implements ProjectService {
     public ProjectResponseDTO updateProjectById(Long projectId, ProjectRequestDTO projectRequestDTO) {
         UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
         ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
-        if (!projectEntity.getOwner().getId().equals(currentLoggedInUser.getId())) {
+        if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
             throw new RuntimeException("You are not allowed to update this project");
         }
         projectEntity.setName(projectRequestDTO.name());
@@ -65,7 +65,7 @@ public class ProjectServiceImplementation implements ProjectService {
     public Void softDeleteProjectById(Long projectId) {
         UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
         ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
-        if (!projectEntity.getOwner().getId().equals(currentLoggedInUser.getId())) {
+        if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
             throw new RuntimeException("You are not allowed to delete this project");
         }
         projectEntity.setDeletedAt(Instant.now());

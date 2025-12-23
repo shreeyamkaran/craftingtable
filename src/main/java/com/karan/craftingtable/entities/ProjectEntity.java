@@ -31,8 +31,8 @@ public class ProjectEntity extends AuditableBaseEntity {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private UserEntity owner;
+    @JoinColumn(name = "project_owner_id", nullable = false)
+    private UserEntity projectOwner;
 
     @Builder.Default
     private Boolean isPublic = false;

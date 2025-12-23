@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -26,19 +27,23 @@ public class ProjectServiceImplementation implements ProjectService {
 
     @Override
     public List<ProjectSummaryResponseDTO> getAllProjects() {
-        return List.of();
+        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        List<ProjectEntity> projectEntities = projectRepository.findAllAccessibleProjects(currentLoggedInUser.getId());
+        return projectMapper.toProjectSummaryResponseDTOList(projectEntities);
     }
 
     @Override
     public ProjectResponseDTO getProjectById(Long projectId) {
-        return null;
+        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
+        return projectMapper.toProjectResponseDTO(projectEntity);
     }
 
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO projectRequestDTO) {
         UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
         ProjectEntity projectEntity = ProjectEntity.builder()
-                .name(currentLoggedInUser.getName())
+                .name(projectRequestDTO.name())
                 .owner(currentLoggedInUser)
                 .build();
         projectEntity = projectRepository.save(projectEntity);
@@ -47,11 +52,23 @@ public class ProjectServiceImplementation implements ProjectService {
 
     @Override
     public ProjectResponseDTO updateProjectById(Long projectId, ProjectRequestDTO projectRequestDTO) {
-        return null;
+        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
+        if (!projectEntity.getOwner().getId().equals(currentLoggedInUser.getId())) {
+            throw new RuntimeException("You are not allowed to update this project");
+        }
+        projectEntity.setName(projectRequestDTO.name());
+        return projectMapper.toProjectResponseDTO(projectEntity);
     }
 
     @Override
-    public Void deleteProjectById(Long projectId) {
+    public Void softDeleteProjectById(Long projectId) {
+        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
+        if (!projectEntity.getOwner().getId().equals(currentLoggedInUser.getId())) {
+            throw new RuntimeException("You are not allowed to delete this project");
+        }
+        projectEntity.setDeletedAt(Instant.now());
         return null;
     }
 

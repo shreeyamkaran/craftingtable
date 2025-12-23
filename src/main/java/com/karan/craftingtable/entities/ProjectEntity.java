@@ -34,6 +34,7 @@ public class ProjectEntity extends AuditableBaseEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
+    @Builder.Default
     private Boolean isPublic = false;
 
 }

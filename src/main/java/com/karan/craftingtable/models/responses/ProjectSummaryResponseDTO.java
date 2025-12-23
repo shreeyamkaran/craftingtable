@@ -6,5 +6,5 @@ public record ProjectSummaryResponseDTO(
         Long id,
         String name,
         Instant createdAt,
-        Instant updatedAt
+        Instant lastModifiedAt
 ) { }

@@ -46,8 +46,8 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{projectId}")
-    public ResponseEntity<Void> deleteProjectById(@PathVariable Long projectId) {
-        return new ResponseEntity<>(projectService.deleteProjectById(projectId), HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> softDeleteProjectById(@PathVariable Long projectId) {
+        return new ResponseEntity<>(projectService.softDeleteProjectById(projectId), HttpStatus.NO_CONTENT);
     }
 
 }

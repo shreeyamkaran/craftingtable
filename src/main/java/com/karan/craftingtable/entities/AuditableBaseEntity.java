@@ -39,7 +39,6 @@ public abstract class AuditableBaseEntity {
     @Column(nullable = false)
     private Instant lastModifiedAt;
 
-    @Column(updatable = false)
     private Instant deletedAt;
 
 }

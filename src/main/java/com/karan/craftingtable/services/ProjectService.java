@@ -16,6 +16,6 @@ public interface ProjectService {
 
     ProjectResponseDTO updateProjectById(Long projectId, ProjectRequestDTO projectRequestDTO);
 
-    Void deleteProjectById(Long projectId);
+    Void softDeleteProjectById(Long projectId);
 
 }

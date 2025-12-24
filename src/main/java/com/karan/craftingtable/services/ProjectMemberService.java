@@ -14,6 +14,6 @@ public interface ProjectMemberService {
 
     ProjectMemberResponseDTO updateProjectMemberRole(Long projectId, Long projectMemberId, UpdateProjectMemberRoleRequestDTO updateProjectMemberRoleRequestDTO);
 
-    Void deleteProjectMember(Long projectId, Long projectMemberId);
+    Void removeProjectMember(Long projectId, Long projectMemberId);
 
 }

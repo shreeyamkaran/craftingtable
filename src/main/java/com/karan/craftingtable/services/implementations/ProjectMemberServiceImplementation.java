@@ -78,11 +78,31 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
 
     @Override
     public ProjectMemberResponseDTO updateProjectMemberRole(Long projectId, Long projectMemberId, UpdateProjectMemberRoleRequestDTO updateProjectMemberRoleRequestDTO) {
-        return null;
+        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
+        if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
+            throw new RuntimeException("You are not allowed to update project members' roles in this project");
+        }
+        ProjectMemberEntity.ProjectMemberEntityId projectMemberEntityId
+                = new ProjectMemberEntity.ProjectMemberEntityId(projectId, projectMemberId);
+        ProjectMemberEntity projectMemberEntity = projectMemberRepository.findById(projectMemberEntityId).orElseThrow();
+        projectMemberEntity.setProjectMemberRole(updateProjectMemberRoleRequestDTO.projectMemberRole());
+        return projectMemberMapper.toProjectMemberResponseDTOFromProjectMemberEntity(projectMemberEntity);
     }
 
     @Override
-    public Void deleteProjectMember(Long projectId, Long projectMemberId) {
+    public Void removeProjectMember(Long projectId, Long projectMemberId) {
+        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
+        if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
+            throw new RuntimeException("You are not allowed to remove project members from this project");
+        }
+        ProjectMemberEntity.ProjectMemberEntityId projectMemberEntityId
+                = new ProjectMemberEntity.ProjectMemberEntityId(projectId, projectMemberId);
+        if (!projectMemberRepository.existsById(projectMemberEntityId)) {
+            throw new RuntimeException("This project member does not exist");
+        }
+        projectMemberRepository.deleteById(projectMemberEntityId);
         return null;
     }
 

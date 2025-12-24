@@ -62,8 +62,12 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
         UserEntity invitee = userRepository.findByEmail(inviteProjectMemberRequestDTO.email()).orElseThrow();
         ProjectMemberEntity.ProjectMemberEntityId projectMemberEntityId
                 = new ProjectMemberEntity.ProjectMemberEntityId(projectId, invitee.getId());
-        if (projectMemberRepository.existsById(projectMemberEntityId)) {
+        ProjectMemberEntity projectMemberEntity = projectMemberRepository.findById(projectMemberEntityId).orElse(null);
+        if (projectMemberEntity != null && projectMemberEntity.getInviteAcceptedAt() != null) {
             throw new RuntimeException("This project member already exists");
+        }
+        if (projectMemberEntity != null) {
+            throw new RuntimeException("Invitation already exists");
         }
         ProjectMemberEntity newlyInvitedProjectMember =
                 ProjectMemberEntity.builder()
@@ -112,7 +116,7 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
         UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
         Long inviteeId = respondToInviteRequestDTO.inviteeId();
         Long projectId = respondToInviteRequestDTO.projectId();
-        if (!inviteeId.equals(2L)) {
+        if (!inviteeId.equals(currentLoggedInUser.getId())) {
             throw new RuntimeException("You are not invited to this project");
         }
         ProjectMemberEntity.ProjectMemberEntityId projectMemberEntityId

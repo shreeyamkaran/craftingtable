@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ProjectMemberRepository extends JpaRepository<ProjectMemberEntity, ProjectMemberEntity.ProjectMemberEntityId> {
 
-    List<ProjectMemberEntity> findByIdProjectId(Long projectId);
+    List<ProjectMemberEntity> findByIdProjectIdAndInviteAcceptedAtIsNotNull(Long projectId);
 
 }

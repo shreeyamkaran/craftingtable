@@ -5,8 +5,10 @@ import com.karan.craftingtable.entities.ProjectMemberEntity;
 import com.karan.craftingtable.entities.UserEntity;
 import com.karan.craftingtable.mappers.ProjectMemberMapper;
 import com.karan.craftingtable.models.requests.InviteProjectMemberRequestDTO;
+import com.karan.craftingtable.models.requests.RespondToInviteRequestDTO;
 import com.karan.craftingtable.models.requests.UpdateProjectMemberRoleRequestDTO;
 import com.karan.craftingtable.models.responses.ProjectMemberResponseDTO;
+import com.karan.craftingtable.models.responses.RespondToInviteResponseDTO;
 import com.karan.craftingtable.repositories.ProjectMemberRepository;
 import com.karan.craftingtable.repositories.ProjectRepository;
 import com.karan.craftingtable.repositories.UserRepository;
@@ -41,7 +43,7 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
         ProjectMemberResponseDTO projectOwnerResponseDTO = projectMemberMapper.toProjectMemberResponseDTOFromProjectOwnerUserEntity(projectOwner);
         projectOwnerAndMemberResponseDTOList.add(projectOwnerResponseDTO);
         // then add the project members
-        List<ProjectMemberEntity> projectMemberEntityList = projectMemberRepository.findByIdProjectId(projectEntity.getId());
+        List<ProjectMemberEntity> projectMemberEntityList = projectMemberRepository.findByIdProjectIdAndInviteAcceptedAtIsNotNull(projectEntity.getId());
         List<ProjectMemberResponseDTO> projectMemberResponseDTOList = projectMemberMapper.toProjectMemberResponseDTOListFromProjectMemberEntityList(projectMemberEntityList);
         projectOwnerAndMemberResponseDTOList.addAll(projectMemberResponseDTOList);
         return projectOwnerAndMemberResponseDTOList;
@@ -70,7 +72,6 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
                         .projectMember(invitee)
                         .projectMemberRole(inviteProjectMemberRequestDTO.projectMemberRole())
                         .invitedAt(Instant.now())
-                        .inviteAcceptedAt(Instant.now()) // TODO: make another API to accept invitations
                         .build();
         projectMemberRepository.save(newlyInvitedProjectMember);
         return projectMemberMapper.toProjectMemberResponseDTOFromProjectMemberEntity(newlyInvitedProjectMember);
@@ -104,6 +105,30 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
         }
         projectMemberRepository.deleteById(projectMemberEntityId);
         return null;
+    }
+
+    @Override
+    public RespondToInviteResponseDTO respondToInvite(RespondToInviteRequestDTO respondToInviteRequestDTO) {
+        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        Long inviteeId = respondToInviteRequestDTO.inviteeId();
+        Long projectId = respondToInviteRequestDTO.projectId();
+        if (!inviteeId.equals(2L)) {
+            throw new RuntimeException("You are not invited to this project");
+        }
+        ProjectMemberEntity.ProjectMemberEntityId projectMemberEntityId
+                = new ProjectMemberEntity.ProjectMemberEntityId(projectId, inviteeId);
+        ProjectMemberEntity projectMemberEntity = projectMemberRepository.findById(projectMemberEntityId).orElseThrow();
+        if (projectMemberEntity.getInviteAcceptedAt() != null) {
+            throw new RuntimeException("Invitation has already been accepted");
+        }
+        RespondToInviteResponseDTO response = new RespondToInviteResponseDTO(false);
+        if (respondToInviteRequestDTO.wantToAcceptTheInvite()) {
+            response = new RespondToInviteResponseDTO(true);
+            projectMemberEntity.setInviteAcceptedAt(Instant.now());
+        } else {
+            projectMemberRepository.deleteById(projectMemberEntityId);
+        }
+        return response;
     }
 
 }

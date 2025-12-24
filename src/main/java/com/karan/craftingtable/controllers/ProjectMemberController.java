@@ -1,8 +1,10 @@
 package com.karan.craftingtable.controllers;
 
 import com.karan.craftingtable.models.requests.InviteProjectMemberRequestDTO;
+import com.karan.craftingtable.models.requests.RespondToInviteRequestDTO;
 import com.karan.craftingtable.models.requests.UpdateProjectMemberRoleRequestDTO;
 import com.karan.craftingtable.models.responses.ProjectMemberResponseDTO;
+import com.karan.craftingtable.models.responses.RespondToInviteResponseDTO;
 import com.karan.craftingtable.services.ProjectMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,6 +45,11 @@ public class ProjectMemberController {
     @DeleteMapping("/{projectMemberId}")
     public ResponseEntity<Void> removeProjectMember(@PathVariable Long projectId, @PathVariable Long projectMemberId) {
         return new ResponseEntity<>(projectMemberService.removeProjectMember(projectId, projectMemberId), HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/invite/respond")
+    public ResponseEntity<RespondToInviteResponseDTO> respondToInvite(@RequestBody RespondToInviteRequestDTO respondToInviteRequestDTO) {
+        return new ResponseEntity<>(projectMemberService.respondToInvite(respondToInviteRequestDTO), HttpStatus.OK);
     }
 
 }

@@ -3,7 +3,9 @@ package com.karan.craftingtable.controllers;
 import com.karan.craftingtable.models.requests.ProjectRequestDTO;
 import com.karan.craftingtable.models.responses.ProjectResponseDTO;
 import com.karan.craftingtable.models.responses.ProjectSummaryResponseDTO;
+import com.karan.craftingtable.models.wrappers.APIResponse;
 import com.karan.craftingtable.services.ProjectService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,28 +28,52 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProjectSummaryResponseDTO>> getAllProjects() {
-        return new ResponseEntity<>(projectService.getAllProjects(), HttpStatus.OK);
+    public ResponseEntity<APIResponse<List<ProjectSummaryResponseDTO>>> getAllProjects() {
+        List<ProjectSummaryResponseDTO> response = projectService.getAllProjects();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(APIResponse.success(response));
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long projectId) {
-        return new ResponseEntity<>(projectService.getProjectById(projectId), HttpStatus.OK);
+    public ResponseEntity<APIResponse<ProjectResponseDTO>> getProjectById(
+            @PathVariable Long projectId
+    ) {
+        ProjectResponseDTO response = projectService.getProjectById(projectId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(APIResponse.success(response));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody ProjectRequestDTO projectRequestDTO) {
-        return new ResponseEntity<>(projectService.createProject(projectRequestDTO), HttpStatus.CREATED);
+    public ResponseEntity<APIResponse<ProjectResponseDTO>> createProject(
+            @Valid @RequestBody ProjectRequestDTO projectRequestDTO
+    ) {
+        ProjectResponseDTO response = projectService.createProject(projectRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(APIResponse.success(response));
     }
 
     @PatchMapping("/{projectId}")
-    public ResponseEntity<ProjectResponseDTO> updateProjectById(@PathVariable Long projectId, @RequestBody ProjectRequestDTO projectRequestDTO) {
-        return new ResponseEntity<>(projectService.updateProjectById(projectId, projectRequestDTO), HttpStatus.OK);
+    public ResponseEntity<APIResponse<ProjectResponseDTO>> updateProjectById(
+            @PathVariable Long projectId,
+            @Valid @RequestBody ProjectRequestDTO projectRequestDTO
+    ) {
+        ProjectResponseDTO response = projectService.updateProjectById(projectId, projectRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(APIResponse.success(response));
     }
 
     @DeleteMapping("/{projectId}")
-    public ResponseEntity<Void> softDeleteProjectById(@PathVariable Long projectId) {
-        return new ResponseEntity<>(projectService.softDeleteProjectById(projectId), HttpStatus.NO_CONTENT);
+    public ResponseEntity<APIResponse<Void>> softDeleteProjectById(
+            @PathVariable Long projectId
+    ) {
+        Void response = projectService.softDeleteProjectById(projectId);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(APIResponse.success(response));
     }
 
 }

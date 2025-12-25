@@ -2,6 +2,8 @@ package com.karan.craftingtable.services.implementations;
 
 import com.karan.craftingtable.entities.ProjectEntity;
 import com.karan.craftingtable.entities.UserEntity;
+import com.karan.craftingtable.exceptions.ResourceNotFoundException;
+import com.karan.craftingtable.exceptions.UnauthorizedException;
 import com.karan.craftingtable.mappers.ProjectMapper;
 import com.karan.craftingtable.models.requests.ProjectRequestDTO;
 import com.karan.craftingtable.models.responses.ProjectResponseDTO;
@@ -35,7 +37,9 @@ public class ProjectServiceImplementation implements ProjectService {
     @Override
     public ProjectResponseDTO getProjectById(Long projectId) {
         UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
-        ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
+        ProjectEntity projectEntity =
+                projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
         return projectMapper.toProjectResponseDTO(projectEntity);
     }
 
@@ -53,9 +57,11 @@ public class ProjectServiceImplementation implements ProjectService {
     @Override
     public ProjectResponseDTO updateProjectById(Long projectId, ProjectRequestDTO projectRequestDTO) {
         UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
-        ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
+        ProjectEntity projectEntity =
+                projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
         if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
-            throw new RuntimeException("You are not allowed to update this project");
+            throw new UnauthorizedException("You are not allowed to update this project");
         }
         projectEntity.setName(projectRequestDTO.name());
         return projectMapper.toProjectResponseDTO(projectEntity);
@@ -64,9 +70,11 @@ public class ProjectServiceImplementation implements ProjectService {
     @Override
     public Void softDeleteProjectById(Long projectId) {
         UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
-        ProjectEntity projectEntity = projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId()).orElseThrow();
+        ProjectEntity projectEntity =
+                projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
         if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
-            throw new RuntimeException("You are not allowed to delete this project");
+            throw new UnauthorizedException("You are not allowed to delete this project");
         }
         projectEntity.setDeletedAt(Instant.now());
         return null;

@@ -50,8 +50,7 @@ public class ProjectMemberEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Builder.Default
-    private ProjectMemberRoleEnum projectMemberRole = ProjectMemberRoleEnum.VIEWER;
+    private ProjectMemberRoleEnum projectMemberRole;
 
     private Instant invitedAt;
 

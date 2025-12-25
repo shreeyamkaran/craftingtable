@@ -5,7 +5,9 @@ import com.karan.craftingtable.models.requests.RespondToInviteRequestDTO;
 import com.karan.craftingtable.models.requests.UpdateProjectMemberRoleRequestDTO;
 import com.karan.craftingtable.models.responses.ProjectMemberResponseDTO;
 import com.karan.craftingtable.models.responses.RespondToInviteResponseDTO;
+import com.karan.craftingtable.models.wrappers.APIResponse;
 import com.karan.craftingtable.services.ProjectMemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,28 +30,57 @@ public class ProjectMemberController {
     private final ProjectMemberService projectMemberService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProjectMemberResponseDTO>> getProjectMembers(@PathVariable Long projectId) {
-        return new ResponseEntity<>(projectMemberService.getProjectMembers(projectId), HttpStatus.OK);
+    public ResponseEntity<APIResponse<List<ProjectMemberResponseDTO>>> getProjectMembers(
+            @PathVariable Long projectId
+    ) {
+        List<ProjectMemberResponseDTO> response = projectMemberService.getProjectMembers(projectId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(APIResponse.success(response));
     }
 
     @PostMapping("/invite")
-    public ResponseEntity<ProjectMemberResponseDTO> inviteProjectMember(@PathVariable Long projectId, @RequestBody InviteProjectMemberRequestDTO inviteProjectMemberRequestDTO) {
-        return new ResponseEntity<>(projectMemberService.inviteProjectMember(projectId, inviteProjectMemberRequestDTO), HttpStatus.OK);
+    public ResponseEntity<APIResponse<ProjectMemberResponseDTO>> inviteProjectMember(
+            @PathVariable Long projectId,
+            @Valid @RequestBody InviteProjectMemberRequestDTO inviteProjectMemberRequestDTO
+    ) {
+        ProjectMemberResponseDTO response = projectMemberService.inviteProjectMember(projectId, inviteProjectMemberRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(APIResponse.success(response));
     }
 
     @PatchMapping("/{projectMemberId}")
-    public ResponseEntity<ProjectMemberResponseDTO> updateProjectMemberRole(@PathVariable Long projectId, @PathVariable Long projectMemberId, @RequestBody UpdateProjectMemberRoleRequestDTO updateProjectMemberRoleRequestDTO) {
-        return new ResponseEntity<>(projectMemberService.updateProjectMemberRole(projectId, projectMemberId, updateProjectMemberRoleRequestDTO), HttpStatus.OK);
+    public ResponseEntity<APIResponse<ProjectMemberResponseDTO>> updateProjectMemberRole(
+            @PathVariable Long projectId,
+            @PathVariable Long projectMemberId,
+            @Valid @RequestBody UpdateProjectMemberRoleRequestDTO updateProjectMemberRoleRequestDTO
+    ) {
+        ProjectMemberResponseDTO response =  projectMemberService.updateProjectMemberRole(projectId, projectMemberId, updateProjectMemberRoleRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(APIResponse.success(response));
     }
 
     @DeleteMapping("/{projectMemberId}")
-    public ResponseEntity<Void> removeProjectMember(@PathVariable Long projectId, @PathVariable Long projectMemberId) {
-        return new ResponseEntity<>(projectMemberService.removeProjectMember(projectId, projectMemberId), HttpStatus.NO_CONTENT);
+    public ResponseEntity<APIResponse<Void>> removeProjectMember(
+            @PathVariable Long projectId,
+            @PathVariable Long projectMemberId
+    ) {
+        Void response = projectMemberService.removeProjectMember(projectId, projectMemberId);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(APIResponse.success(response));
     }
 
     @PostMapping("/invite/respond")
-    public ResponseEntity<RespondToInviteResponseDTO> respondToInvite(@RequestBody RespondToInviteRequestDTO respondToInviteRequestDTO) {
-        return new ResponseEntity<>(projectMemberService.respondToInvite(respondToInviteRequestDTO), HttpStatus.OK);
+    public ResponseEntity<APIResponse<RespondToInviteResponseDTO>> respondToInvite(
+            @Valid @RequestBody RespondToInviteRequestDTO respondToInviteRequestDTO
+    ) {
+        RespondToInviteResponseDTO response = projectMemberService.respondToInvite(respondToInviteRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(APIResponse.success(response));
     }
 
 }

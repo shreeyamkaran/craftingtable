@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -15,7 +16,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "t_projects")
+@Table(
+        name = "t_projects",
+        indexes = {
+                @Index(name = "idx_projects_last_modified_at_desc_deleted_at", columnList = "last_modified_at DESC, deleted_at"),
+                @Index(name = "idx_projects_deleted_at_last_modified_at_desc", columnList = "deleted_at, last_modified_at DESC"),
+                @Index(name = "idx_projects_deleted_at", columnList = "deleted_at")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,10 +37,6 @@ public class ProjectEntity extends AuditableBaseEntity {
 
     @Column(nullable = false)
     private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "project_owner_id", nullable = false)
-    private UserEntity projectOwner;
 
     @Builder.Default
     private Boolean isPublic = false;

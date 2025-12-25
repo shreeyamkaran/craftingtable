@@ -6,6 +6,5 @@ public record ProjectResponseDTO(
         Long id,
         String name,
         Instant createdAt,
-        Instant lastModifiedAt,
-        UserProfileResponseDTO projectOwner
+        Instant lastModifiedAt
 ) { }

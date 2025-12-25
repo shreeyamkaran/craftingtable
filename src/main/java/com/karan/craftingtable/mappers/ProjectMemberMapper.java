@@ -14,19 +14,12 @@ public interface ProjectMemberMapper {
     @Mapping(target = "id", source = "projectMember.id")
     @Mapping(target = "name", source = "projectMember.name")
     @Mapping(target = "email", source = "projectMember.email")
-    @Mapping(target = "avatarURL", source = "projectMember.avatarURL")
     ProjectMemberResponseDTO toProjectMemberResponseDTOFromProjectMemberEntity(
             ProjectMemberEntity projectMemberEntity
     );
 
     List<ProjectMemberResponseDTO> toProjectMemberResponseDTOListFromProjectMemberEntityList(
             List<ProjectMemberEntity> projectMemberEntityList
-    );
-
-    @Mapping(target = "projectMemberRole", constant = "OWNER")
-    @Mapping(target = "invitedAt", ignore = true)
-    ProjectMemberResponseDTO toProjectMemberResponseDTOFromProjectOwnerUserEntity(
-            UserEntity projectOwner
     );
 
 }

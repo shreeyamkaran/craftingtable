@@ -1,5 +1,6 @@
 package com.karan.craftingtable.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,12 +25,12 @@ public class UserEntity extends AuditableBaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
+    @Column(unique = true, nullable = false)
     public String email;
 
-    private String passwordHash;
+    private String password;
 
+    @Column(nullable = false)
     private String name;
-
-    private String avatarURL;
 
 }

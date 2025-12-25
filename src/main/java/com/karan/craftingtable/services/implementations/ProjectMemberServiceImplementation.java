@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,16 +41,8 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
-        List<ProjectMemberResponseDTO> projectOwnerAndMemberResponseDTOList = new ArrayList<>();
-        // first add the project owner
-        UserEntity projectOwner = projectEntity.getProjectOwner();
-        ProjectMemberResponseDTO projectOwnerResponseDTO = projectMemberMapper.toProjectMemberResponseDTOFromProjectOwnerUserEntity(projectOwner);
-        projectOwnerAndMemberResponseDTOList.add(projectOwnerResponseDTO);
-        // then add the project members
         List<ProjectMemberEntity> projectMemberEntityList = projectMemberRepository.findByIdProjectIdAndInviteAcceptedAtIsNotNull(projectEntity.getId());
-        List<ProjectMemberResponseDTO> projectMemberResponseDTOList = projectMemberMapper.toProjectMemberResponseDTOListFromProjectMemberEntityList(projectMemberEntityList);
-        projectOwnerAndMemberResponseDTOList.addAll(projectMemberResponseDTOList);
-        return projectOwnerAndMemberResponseDTOList;
+        return projectMemberMapper.toProjectMemberResponseDTOListFromProjectMemberEntityList(projectMemberEntityList);
     }
 
     @Override
@@ -60,9 +51,6 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
-        if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
-            throw new UnauthorizedException("You are not allowed to invite members in this project");
-        }
         if (inviteProjectMemberRequestDTO.email().equals(currentLoggedInUser.getEmail())) {
             throw new UnauthorizedException("You are not allowed to invite yourself");
         }
@@ -96,9 +84,6 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
-        if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
-            throw new UnauthorizedException("You are not allowed to update project members' roles in this project");
-        }
         ProjectMemberEntity.ProjectMemberEntityId projectMemberEntityId
                 = new ProjectMemberEntity.ProjectMemberEntityId(projectId, projectMemberId);
         ProjectMemberEntity projectMemberEntity =
@@ -114,9 +99,6 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
-        if (!projectEntity.getProjectOwner().getId().equals(currentLoggedInUser.getId())) {
-            throw new UnauthorizedException("You are not allowed to remove project members from this project");
-        }
         ProjectMemberEntity.ProjectMemberEntityId projectMemberEntityId
                 = new ProjectMemberEntity.ProjectMemberEntityId(projectId, projectMemberId);
         if (!projectMemberRepository.existsById(projectMemberEntityId)) {

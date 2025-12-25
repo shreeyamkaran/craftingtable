@@ -8,7 +8,7 @@ public record ProjectMemberResponseDTO(
         Long id,
         String name,
         String email,
-        String avatarURL,
         ProjectMemberRoleEnum projectMemberRole,
-        Instant invitedAt
+        Instant invitedAt,
+        Instant inviteAcceptedAt
 ) { }

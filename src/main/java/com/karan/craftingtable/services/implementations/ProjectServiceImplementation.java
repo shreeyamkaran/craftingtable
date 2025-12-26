@@ -11,8 +11,8 @@ import com.karan.craftingtable.models.responses.ProjectResponseDTO;
 import com.karan.craftingtable.models.responses.ProjectSummaryResponseDTO;
 import com.karan.craftingtable.repositories.ProjectMemberRepository;
 import com.karan.craftingtable.repositories.ProjectRepository;
+import com.karan.craftingtable.services.AuthService;
 import com.karan.craftingtable.services.ProjectService;
-import com.karan.craftingtable.utilities.LoggedInUserProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,20 +26,20 @@ import java.util.List;
 public class ProjectServiceImplementation implements ProjectService {
 
     private final ProjectRepository projectRepository;
-    private final LoggedInUserProvider loggedInUserProvider;
     private final ProjectMapper projectMapper;
     private final ProjectMemberRepository projectMemberRepository;
+    private final AuthService authService;
 
     @Override
     public List<ProjectSummaryResponseDTO> getAllProjects() {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         List<ProjectEntity> projectEntities = projectRepository.findAllAccessibleProjects(currentLoggedInUser.getId());
         return projectMapper.toProjectSummaryResponseDTOList(projectEntities);
     }
 
     @Override
     public ProjectResponseDTO getProjectById(Long projectId) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
@@ -48,7 +48,7 @@ public class ProjectServiceImplementation implements ProjectService {
 
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO projectRequestDTO) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity = ProjectEntity.builder()
                 .name(projectRequestDTO.name())
                 .build();
@@ -69,7 +69,7 @@ public class ProjectServiceImplementation implements ProjectService {
 
     @Override
     public ProjectResponseDTO updateProjectById(Long projectId, ProjectRequestDTO projectRequestDTO) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
@@ -79,7 +79,7 @@ public class ProjectServiceImplementation implements ProjectService {
 
     @Override
     public Void softDeleteProjectById(Long projectId) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));

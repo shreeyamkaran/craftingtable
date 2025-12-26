@@ -11,6 +11,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
+import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "t_users")
@@ -19,7 +26,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEntity extends AuditableBaseEntity {
+@SQLRestriction("deleted_at IS NULL")
+public class UserEntity extends AuditableBaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,9 +36,20 @@ public class UserEntity extends AuditableBaseEntity {
     @Column(unique = true, nullable = false)
     public String email;
 
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     private String name;
+
+    @Override
+    public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public @NonNull String getUsername() {
+        return email;
+    }
 
 }

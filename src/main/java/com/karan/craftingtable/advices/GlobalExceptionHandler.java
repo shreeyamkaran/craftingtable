@@ -3,14 +3,18 @@ package com.karan.craftingtable.advices;
 import com.karan.craftingtable.enums.ErrorCodeEnum;
 import com.karan.craftingtable.exceptions.BadRequestException;
 import com.karan.craftingtable.exceptions.ResourceNotFoundException;
+import com.karan.craftingtable.exceptions.UnauthenticatedException;
 import com.karan.craftingtable.exceptions.UnauthorizedException;
 import com.karan.craftingtable.models.wrappers.APIError;
 import com.karan.craftingtable.models.wrappers.APIResponse;
 import com.karan.craftingtable.models.wrappers.FieldValidationError;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -111,7 +115,75 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         APIError apiError = new APIError(
+                ErrorCodeEnum.FORBIDDEN.name(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                HttpStatus.FORBIDDEN.value(),
+                null
+        );
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(APIResponse.failure(apiError));
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<APIResponse<Object>> handleUnauthenticatedException(
+            UnauthenticatedException ex,
+            HttpServletRequest request
+    ) {
+        APIError apiError = new APIError(
                 ErrorCodeEnum.UNAUTHORIZED.name(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                HttpStatus.UNAUTHORIZED.value(),
+                null
+        );
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(APIResponse.failure(apiError));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<APIResponse<Object>> handleAuthenticationException(
+            AuthenticationException ex,
+            HttpServletRequest request
+    ) {
+        APIError apiError = new APIError(
+                ErrorCodeEnum.UNAUTHORIZED.name(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                HttpStatus.UNAUTHORIZED.value(),
+                null
+        );
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(APIResponse.failure(apiError));
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<APIResponse<Object>> handleJwtException(
+            JwtException ex,
+            HttpServletRequest request
+    ) {
+        APIError apiError = new APIError(
+                ErrorCodeEnum.UNAUTHORIZED.name(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                HttpStatus.UNAUTHORIZED.value(),
+                null
+        );
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(APIResponse.failure(apiError));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<APIResponse<Object>> handleAccessDeniedException(
+            AccessDeniedException ex,
+            HttpServletRequest request
+    ) {
+        APIError apiError = new APIError(
+                ErrorCodeEnum.FORBIDDEN.name(),
                 ex.getMessage(),
                 request.getRequestURI(),
                 HttpStatus.FORBIDDEN.value(),

@@ -15,8 +15,8 @@ import com.karan.craftingtable.models.responses.RespondToInviteResponseDTO;
 import com.karan.craftingtable.repositories.ProjectMemberRepository;
 import com.karan.craftingtable.repositories.ProjectRepository;
 import com.karan.craftingtable.repositories.UserRepository;
+import com.karan.craftingtable.services.AuthService;
 import com.karan.craftingtable.services.ProjectMemberService;
-import com.karan.craftingtable.utilities.LoggedInUserProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,13 +31,13 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
 
     private final ProjectMemberRepository projectMemberRepository;
     private final ProjectRepository projectRepository;
-    private final LoggedInUserProvider loggedInUserProvider;
     private final ProjectMemberMapper projectMemberMapper;
     private final UserRepository userRepository;
+    private final AuthService authService;
 
     @Override
     public List<ProjectMemberResponseDTO> getProjectMembers(Long projectId) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
@@ -47,7 +47,7 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
 
     @Override
     public ProjectMemberResponseDTO inviteProjectMember(Long projectId, InviteProjectMemberRequestDTO inviteProjectMemberRequestDTO) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
@@ -59,13 +59,13 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
                         .orElseThrow(() -> new ResourceNotFoundException("User not found with email " + inviteProjectMemberRequestDTO.email()));
         ProjectMemberEntity.ProjectMemberEntityId projectMemberEntityId
                 = new ProjectMemberEntity.ProjectMemberEntityId(projectId, invitee.getId());
-        ProjectMemberEntity projectMemberEntity = projectMemberRepository.findById(projectMemberEntityId).orElse(null);
-        if (projectMemberEntity != null && projectMemberEntity.getInviteAcceptedAt() != null) {
-            throw new BadRequestException("This project member already exists");
-        }
-        if (projectMemberEntity != null) {
-            throw new BadRequestException("Invitation already exists");
-        }
+        projectMemberRepository.findById(projectMemberEntityId).ifPresent(entity -> {
+            if (entity.getInviteAcceptedAt() != null) {
+                throw new BadRequestException("This project member already exists");
+            } else {
+                throw new BadRequestException("Invitation already exists");
+            }
+        });
         ProjectMemberEntity newlyInvitedProjectMember =
                 ProjectMemberEntity.builder()
                         .id(projectMemberEntityId)
@@ -80,7 +80,7 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
 
     @Override
     public ProjectMemberResponseDTO updateProjectMemberRole(Long projectId, Long projectMemberId, UpdateProjectMemberRoleRequestDTO updateProjectMemberRoleRequestDTO) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
@@ -95,7 +95,7 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
 
     @Override
     public Void removeProjectMember(Long projectId, Long projectMemberId) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
                 projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
                         .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
@@ -110,7 +110,7 @@ public class ProjectMemberServiceImplementation implements ProjectMemberService 
 
     @Override
     public RespondToInviteResponseDTO respondToInvite(RespondToInviteRequestDTO respondToInviteRequestDTO) {
-        UserEntity currentLoggedInUser = loggedInUserProvider.getCurrentLoggedInUser();
+        UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         Long inviteeId = respondToInviteRequestDTO.inviteeId();
         Long projectId = respondToInviteRequestDTO.projectId();
         if (!inviteeId.equals(currentLoggedInUser.getId())) {

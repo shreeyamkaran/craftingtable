@@ -14,10 +14,10 @@ public interface ProjectMemberService {
 
     ProjectMemberResponseDTO inviteProjectMember(Long projectId, InviteProjectMemberRequestDTO inviteProjectMemberRequestDTO);
 
-    ProjectMemberResponseDTO updateProjectMemberRole(Long projectId, Long projectMemberId, UpdateProjectMemberRoleRequestDTO updateProjectMemberRoleRequestDTO);
+    ProjectMemberResponseDTO updateProjectMemberRole(Long projectId, UpdateProjectMemberRoleRequestDTO updateProjectMemberRoleRequestDTO);
 
     Void removeProjectMember(Long projectId, Long projectMemberId);
 
-    RespondToInviteResponseDTO respondToInvite(RespondToInviteRequestDTO respondToInviteRequestDTO);
+    RespondToInviteResponseDTO respondToInvite(Long projectId, RespondToInviteRequestDTO respondToInviteRequestDTO);
 
 }

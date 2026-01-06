@@ -21,8 +21,8 @@ public class JWTServiceImplementation implements JWTService {
 
     @Override
     public SecretKey getSecretKey() {
-        String jwtSecretHex = propertiesConfiguration.getJwtSecret();
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecretHex);
+        String jwtSecret = propertiesConfiguration.getJwtSecret();
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

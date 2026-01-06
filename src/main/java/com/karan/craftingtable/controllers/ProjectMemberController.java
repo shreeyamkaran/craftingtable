@@ -50,13 +50,12 @@ public class ProjectMemberController {
                 .body(APIResponse.success(response));
     }
 
-    @PatchMapping("/{projectMemberId}")
+    @PatchMapping
     public ResponseEntity<APIResponse<ProjectMemberResponseDTO>> updateProjectMemberRole(
             @PathVariable Long projectId,
-            @PathVariable Long projectMemberId,
             @Valid @RequestBody UpdateProjectMemberRoleRequestDTO updateProjectMemberRoleRequestDTO
     ) {
-        ProjectMemberResponseDTO response =  projectMemberService.updateProjectMemberRole(projectId, projectMemberId, updateProjectMemberRoleRequestDTO);
+        ProjectMemberResponseDTO response =  projectMemberService.updateProjectMemberRole(projectId, updateProjectMemberRoleRequestDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(APIResponse.success(response));
@@ -75,9 +74,10 @@ public class ProjectMemberController {
 
     @PostMapping("/invite/respond")
     public ResponseEntity<APIResponse<RespondToInviteResponseDTO>> respondToInvite(
+            @PathVariable Long projectId,
             @Valid @RequestBody RespondToInviteRequestDTO respondToInviteRequestDTO
     ) {
-        RespondToInviteResponseDTO response = projectMemberService.respondToInvite(respondToInviteRequestDTO);
+        RespondToInviteResponseDTO response = projectMemberService.respondToInvite(projectId, respondToInviteRequestDTO);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .body(APIResponse.success(response));

@@ -14,6 +14,7 @@ import com.karan.craftingtable.repositories.ProjectRepository;
 import com.karan.craftingtable.services.AuthService;
 import com.karan.craftingtable.services.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ public class ProjectServiceImplementation implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@permissionUtility.canViewProject(#projectId)")
     public ProjectResponseDTO getProjectById(Long projectId) {
         UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
@@ -68,6 +70,7 @@ public class ProjectServiceImplementation implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@permissionUtility.canEditProject(#projectId)")
     public ProjectResponseDTO updateProjectById(Long projectId, ProjectRequestDTO projectRequestDTO) {
         UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =
@@ -78,6 +81,7 @@ public class ProjectServiceImplementation implements ProjectService {
     }
 
     @Override
+    @PreAuthorize("@permissionUtility.canDeleteProject(#projectId)")
     public Void softDeleteProjectById(Long projectId) {
         UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity =

@@ -1,7 +1,6 @@
 package com.karan.craftingtable.mappers;
 
 import com.karan.craftingtable.entities.ProjectMemberEntity;
-import com.karan.craftingtable.entities.UserEntity;
 import com.karan.craftingtable.models.responses.ProjectMemberResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

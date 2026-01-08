@@ -36,7 +36,6 @@ public class SubscriptionEntity {
     private PlanEntity plan;
     @Enumerated(value = EnumType.STRING)
     private SubscriptionStatusEnum subscriptionStatus;
-    private String paymentGatewayCustomerId;
     private String paymentGatewaySubscriptionId;
     private Instant currentSubscriptionStartsAt;
     private Instant currentSubscriptionEndsAt;

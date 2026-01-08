@@ -34,7 +34,7 @@ public class SecurityConfiguration {
                         ex.accessDeniedHandler(accessDeniedHandler())
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/payments/webhooks/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();

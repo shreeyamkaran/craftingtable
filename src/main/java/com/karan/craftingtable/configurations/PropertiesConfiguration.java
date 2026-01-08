@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 public class PropertiesConfiguration {
 
+    @Value("${client.url}")
+    private String clientURL;
+
     @Value("${argon2.saltLength}")
     private Integer argon2SaltLength;
 
@@ -31,5 +34,11 @@ public class PropertiesConfiguration {
 
     @Value("${jwt.refresh.token.expiration.ms}")
     private Long refreshTokenExpirationMs;
+
+    @Value("${stripe.api.key}")
+    private String stripeAPIKey;
+
+    @Value("${stripe.webhook.signing.secret}")
+    private String stripeWebhookSigningSecret;
 
 }

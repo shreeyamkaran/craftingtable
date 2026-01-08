@@ -20,13 +20,6 @@ public class JWTServiceImplementation implements JWTService {
     private final PropertiesConfiguration propertiesConfiguration;
 
     @Override
-    public SecretKey getSecretKey() {
-        String jwtSecret = propertiesConfiguration.getJwtSecret();
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    @Override
     public String generateAccessToken(UserEntity userEntity) {
         Long accessTokenExpirationMs = propertiesConfiguration.getAccessTokenExpirationMs();
         return Jwts.builder()
@@ -60,6 +53,12 @@ public class JWTServiceImplementation implements JWTService {
                 .parseSignedClaims(token)
                 .getPayload();
         return Long.valueOf(claims.getSubject());
+    }
+
+    private SecretKey getSecretKey() {
+        String jwtSecret = propertiesConfiguration.getJwtSecret();
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
 }

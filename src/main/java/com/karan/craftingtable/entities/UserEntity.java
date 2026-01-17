@@ -31,10 +31,13 @@ public class UserEntity extends AuditableBaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
+
+    @Column(unique = true)
+    private String paymentGatewayCustomerId;
 
     @Column(unique = true, nullable = false)
-    public String email;
+    private String email;
 
     @Column(nullable = false)
     private String password;

@@ -4,6 +4,7 @@ import com.karan.craftingtable.entities.ProjectEntity;
 import com.karan.craftingtable.entities.ProjectMemberEntity;
 import com.karan.craftingtable.entities.UserEntity;
 import com.karan.craftingtable.enums.ProjectMemberRoleEnum;
+import com.karan.craftingtable.exceptions.BadRequestException;
 import com.karan.craftingtable.exceptions.ResourceNotFoundException;
 import com.karan.craftingtable.mappers.ProjectMapper;
 import com.karan.craftingtable.models.requests.ProjectRequestDTO;
@@ -13,6 +14,7 @@ import com.karan.craftingtable.repositories.ProjectMemberRepository;
 import com.karan.craftingtable.repositories.ProjectRepository;
 import com.karan.craftingtable.services.AuthService;
 import com.karan.craftingtable.services.ProjectService;
+import com.karan.craftingtable.services.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class ProjectServiceImplementation implements ProjectService {
     private final ProjectMapper projectMapper;
     private final ProjectMemberRepository projectMemberRepository;
     private final AuthService authService;
+    private final SubscriptionService subscriptionService;
 
     @Override
     public List<ProjectSummaryResponseDTO> getAllProjects() {
@@ -50,6 +53,9 @@ public class ProjectServiceImplementation implements ProjectService {
 
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO projectRequestDTO) {
+        if(!subscriptionService.canCreateNewProject()) {
+            throw new BadRequestException("User is not allowed to create a new project. Please upgrade your plan.");
+        }
         UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
         ProjectEntity projectEntity = ProjectEntity.builder()
                 .name(projectRequestDTO.name())

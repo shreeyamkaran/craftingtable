@@ -2,8 +2,8 @@ package com.karan.craftingtable.enums;
 
 public enum SubscriptionStatusEnum {
     ACTIVE,
-    TRAILING,
-    CANCELLED,
+    TRIALING,
+    CANCELED,
     PAST_DUE,
     INCOMPLETE
 }

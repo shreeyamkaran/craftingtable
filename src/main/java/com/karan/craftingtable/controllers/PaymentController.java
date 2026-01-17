@@ -1,6 +1,5 @@
 package com.karan.craftingtable.controllers;
 
-import com.karan.craftingtable.configurations.PropertiesConfiguration;
 import com.karan.craftingtable.models.requests.CheckoutRequestDTO;
 import com.karan.craftingtable.models.responses.CheckoutResponseDTO;
 import com.karan.craftingtable.models.responses.PaymentGatewayPortalResponseDTO;
@@ -32,7 +31,6 @@ public class PaymentController {
     private final PlanService planService;
     private final SubscriptionService subscriptionService;
     private final PaymentProcessor paymentProcessor;
-    private final PropertiesConfiguration propertiesConfiguration;
 
     @GetMapping("/plans")
     public ResponseEntity<APIResponse<List<PlanResponseDTO>>> getAllPlans() {
@@ -42,9 +40,9 @@ public class PaymentController {
                 .body(APIResponse.success(response));
     }
 
-    @GetMapping("/me/subscriptions")
-    public ResponseEntity<APIResponse<SubscriptionResponseDTO>> getMySubscriptions() {
-        SubscriptionResponseDTO response = subscriptionService.getMySubscriptions();
+    @GetMapping("/me/subscription")
+    public ResponseEntity<APIResponse<SubscriptionResponseDTO>> getCurrentSubscription() {
+        SubscriptionResponseDTO response = subscriptionService.getCurrentSubscription();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(APIResponse.success(response));
@@ -69,11 +67,11 @@ public class PaymentController {
     }
 
     @PostMapping("/webhooks")
-    public ResponseEntity<?> handlePaymentWebhooks(
+    public ResponseEntity<?> handleWebhookEvents(
             @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String stripeSignatureHeader
     ) {
-        return paymentProcessor.handleWebhookEvent(payload, stripeSignatureHeader);
+        return paymentProcessor.handleWebhookEvents(payload, stripeSignatureHeader);
     }
 
 }

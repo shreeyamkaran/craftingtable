@@ -11,6 +11,6 @@ public interface PaymentProcessor {
 
     PaymentGatewayPortalResponseDTO openPaymentGatewayPortal();
 
-    ResponseEntity<?> handleWebhookEvent(String payload, String stripeSignatureHeader);
+    ResponseEntity<?> handleWebhookEvents(String payload, String stripeSignatureHeader);
 
 }

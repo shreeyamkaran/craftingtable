@@ -41,4 +41,7 @@ public class PropertiesConfiguration {
     @Value("${stripe.webhook.signing.secret}")
     private String stripeWebhookSigningSecret;
 
+    @Value("${project.free-tier.max-limit}")
+    private Integer freeTierProjectsMaxLimit;
+
 }

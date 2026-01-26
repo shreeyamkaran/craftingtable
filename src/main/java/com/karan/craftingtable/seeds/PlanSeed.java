@@ -1,4 +1,4 @@
-package com.karan.craftingtable.models.seeds;
+package com.karan.craftingtable.seeds;
 
 public record PlanSeed(
         String name,

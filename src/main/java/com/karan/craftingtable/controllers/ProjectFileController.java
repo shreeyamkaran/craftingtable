@@ -1,7 +1,7 @@
 package com.karan.craftingtable.controllers;
 
 import com.karan.craftingtable.models.responses.FileContentResponseDTO;
-import com.karan.craftingtable.models.responses.FileResponseDTO;
+import com.karan.craftingtable.models.responses.FileNodeResponseDTO;
 import com.karan.craftingtable.services.ProjectFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class ProjectFileController {
     private final ProjectFileService projectFileService;
 
     @GetMapping
-    public ResponseEntity<List<FileResponseDTO>> getFileTree(@PathVariable Long projectId) {
+    public ResponseEntity<List<FileNodeResponseDTO>> getFileTree(@PathVariable Long projectId) {
         return new ResponseEntity<>(projectFileService.getFileTree(projectId), HttpStatus.OK);
     }
 

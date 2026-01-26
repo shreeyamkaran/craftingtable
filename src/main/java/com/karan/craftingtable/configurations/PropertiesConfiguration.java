@@ -44,4 +44,28 @@ public class PropertiesConfiguration {
     @Value("${project.free-tier.max-limit}")
     private Integer freeTierProjectsMaxLimit;
 
+    @Value("${spring.ai.openai.api-key}")
+    private String springAIOpenAIAPIKey;
+
+    @Value("${spring.ai.openai.base-url}")
+    private String springAIOpenAIBaseURL;
+
+    @Value("${spring.ai.openai.chat.options.model}")
+    private String springAIOpenAIChatOptionsModel;
+
+    @Value("${spring.ai.openai.chat.options.temperature}")
+    private String springAIOpenAIChatOptionsTemperature;
+
+    @Value("${minio.url}")
+    private String minioURL;
+
+    @Value("${minio.access-key}")
+    private String minioAccessKey;
+
+    @Value("${minio.secret-key}")
+    private String minioSecretKey;
+
+    @Value("${minio.project-bucket}")
+    private String minioProjectBucket;
+
 }

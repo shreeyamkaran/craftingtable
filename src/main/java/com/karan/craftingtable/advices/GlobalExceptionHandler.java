@@ -194,7 +194,7 @@ public class GlobalExceptionHandler {
                 .body(APIResponse.failure(apiError));
     }
 
-    @ExceptionHandler(Exception.class)
+//    @ExceptionHandler(Exception.class)
     public ResponseEntity<APIResponse<Object>> handleGenericException(
             Exception ex,
             HttpServletRequest request

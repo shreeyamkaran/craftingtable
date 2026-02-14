@@ -14,6 +14,7 @@ import com.karan.craftingtable.repositories.ProjectMemberRepository;
 import com.karan.craftingtable.repositories.ProjectRepository;
 import com.karan.craftingtable.services.AuthService;
 import com.karan.craftingtable.services.ProjectService;
+import com.karan.craftingtable.services.ProjectTemplateService;
 import com.karan.craftingtable.services.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +34,7 @@ public class ProjectServiceImplementation implements ProjectService {
     private final ProjectMemberRepository projectMemberRepository;
     private final AuthService authService;
     private final SubscriptionService subscriptionService;
+    private final ProjectTemplateService projectTemplateService;
 
     @Override
     public List<ProjectSummaryResponseDTO> getAllProjects() {
@@ -72,6 +74,7 @@ public class ProjectServiceImplementation implements ProjectService {
                 .inviteAcceptedAt(Instant.now())
                 .build();
         projectMemberRepository.save(projectMemberEntity);
+        projectTemplateService.initialiseProjectFromTemplate(projectEntity.getId());
         return projectMapper.toProjectResponseDTO(projectEntity);
     }
 

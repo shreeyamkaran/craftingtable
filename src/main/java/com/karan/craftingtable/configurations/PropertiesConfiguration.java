@@ -4,8 +4,8 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
 @Getter
+@Configuration
 public class PropertiesConfiguration {
 
     @Value("${client.url}")
@@ -67,5 +67,11 @@ public class PropertiesConfiguration {
 
     @Value("${minio.project-bucket}")
     private String minioProjectBucket;
+
+    @Value("${minio.template-bucket}")
+    private String minioTemplateBucket;
+
+    @Value("${minio.template-name}")
+    private String minioTemplateName;
 
 }

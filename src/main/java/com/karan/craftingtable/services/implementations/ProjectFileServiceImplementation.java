@@ -10,6 +10,7 @@ import com.karan.craftingtable.models.responses.FileNodeResponseDTO;
 import com.karan.craftingtable.repositories.ProjectFileRepository;
 import com.karan.craftingtable.repositories.ProjectRepository;
 import com.karan.craftingtable.services.ProjectFileService;
+import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,23 @@ public class ProjectFileServiceImplementation implements ProjectFileService {
     }
 
     @Override
-    public FileContentResponseDTO getFile(Long projectId) {
-        return null;
+    public FileContentResponseDTO getFileContent(Long projectId, String filePath) {
+        final String PROJECT_BUCKET = propertiesConfiguration.getMinioProjectBucket();
+        String objectName = projectId + "/" + filePath;
+        try (
+                InputStream is = minioClient.getObject(
+                        GetObjectArgs.builder()
+                                .bucket(PROJECT_BUCKET)
+                                .object(objectName)
+                                .build()
+                )
+        ) {
+            String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            return new FileContentResponseDTO(filePath, content);
+        } catch (Exception e) {
+            log.error("Failed to read file: {}/{}", projectId, filePath, e);
+            throw new RuntimeException("Failed to read file content", e);
+        }
     }
 
     @Override

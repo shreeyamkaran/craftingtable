@@ -1,10 +1,12 @@
 package com.karan.craftingtable.services.implementations;
 
 import com.karan.craftingtable.entities.UserEntity;
+import com.karan.craftingtable.llms.advisors.FileTreeContextAdvisor;
+import com.karan.craftingtable.llms.tools.CodeGenerationTool;
 import com.karan.craftingtable.services.AIService;
 import com.karan.craftingtable.services.AuthService;
 import com.karan.craftingtable.services.ProjectFileService;
-import com.karan.craftingtable.utilities.PromptUtility;
+import com.karan.craftingtable.llms.PromptUtility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -26,6 +28,7 @@ public class AIServiceImplementation implements AIService {
     private final ChatClient chatClient;
     private final AuthService authService;
     private final ProjectFileService projectFileService;
+    private final FileTreeContextAdvisor fileTreeContextAdvisor;
     private static final Pattern FILE_TAG_PATTERN = Pattern.compile("<file path=\"([^\"]+)\">(.*?)</file>", Pattern.DOTALL);
 
     @Override
@@ -40,12 +43,15 @@ public class AIServiceImplementation implements AIService {
                 "projectId", projectId
         );
         StringBuilder completeResponseBuffer = new StringBuilder();
+        CodeGenerationTool codeGenerationTool = new CodeGenerationTool(projectFileService, projectId);
         return chatClient
                 .prompt()
                 .system(PromptUtility.CODE_GENERATION_SYSTEM_PROMPT)
                 .user(userPrompt)
+                .tools(codeGenerationTool)
                 .advisors(advisorSpec -> {
                     advisorSpec.params(advisorParams);
+                    advisorSpec.advisors(fileTreeContextAdvisor);
                 })
                 .stream()
                 .chatResponse()
@@ -53,9 +59,7 @@ public class AIServiceImplementation implements AIService {
                     String content = chatResponse.getResult().getOutput().getText();
                     completeResponseBuffer.append(content);
                 })
-                .doOnComplete(() -> {
-                    Schedulers.boundedElastic().schedule(() -> parseAndSaveFiles(String.valueOf(completeResponseBuffer), projectId));
-                })
+                .doOnComplete(() -> Schedulers.boundedElastic().schedule(() -> parseAndSaveFiles(String.valueOf(completeResponseBuffer), projectId)))
                 .doOnError(error -> log.error("Error occurred during streaming :: {}", error.getMessage()))
                 .map(chatResponse -> Objects.requireNonNull(chatResponse.getResult().getOutput().getText()));
     }

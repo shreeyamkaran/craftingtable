@@ -1,4 +1,4 @@
-package com.karan.craftingtable.utilities;
+package com.karan.craftingtable.llms;
 
 import java.time.LocalDate;
 

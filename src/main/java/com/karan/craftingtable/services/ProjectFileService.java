@@ -9,7 +9,7 @@ public interface ProjectFileService {
 
     List<FileNodeResponseDTO> getFileTree(Long projectId);
 
-    FileContentResponseDTO getFile(Long projectId);
+    FileContentResponseDTO getFileContent(Long projectId, String filePath);
 
     void saveFile(Long projectId, String filePath, String fileContent);
 

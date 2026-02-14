@@ -20,12 +20,12 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
-      - "${MINIO_API_PORT}:9000"    # API
+      - "${MINIO_API_PORT}:9000"        # API
       - "${MINIO_CONSOLE_PORT}:9001"    # Console
     volumes:
-      - minio-data:/data
+      - minio_data:/data
     restart: unless-stopped
 
 volumes:
   postgres_data:
-  minio-data:
+  minio_data:

@@ -1,7 +1,5 @@
 package com.karan.craftingtable.services.implementations;
 
-import com.karan.craftingtable.models.responses.PlanLimitsResponseDTO;
-import com.karan.craftingtable.models.responses.TodayUsageResponseDTO;
 import com.karan.craftingtable.services.UsageService;
 import org.springframework.stereotype.Service;
 
@@ -9,13 +7,12 @@ import org.springframework.stereotype.Service;
 public class UsageServiceImplementation implements UsageService {
 
     @Override
-    public TodayUsageResponseDTO getTodayUsage() {
-        return null;
+    public void recordTokenUsage(Long userId, int actualTokens) {
+
     }
 
     @Override
-    public PlanLimitsResponseDTO getCurrentPlanLimits() {
-        return null;
-    }
+    public void checkDailyTokensUsage() {
 
+    }
 }

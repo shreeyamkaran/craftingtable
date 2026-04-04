@@ -28,7 +28,7 @@ public class ChatSessionEntity extends AuditableBaseEntity {
 
     // composite key (a static inner class. defined at the bottom)
     @EmbeddedId
-    private ChatSessionEntityId chatSession;
+    private ChatSessionEntityId chatSessionEntityId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("projectId")

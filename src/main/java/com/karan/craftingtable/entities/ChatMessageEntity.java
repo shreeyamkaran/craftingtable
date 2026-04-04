@@ -1,6 +1,7 @@
 package com.karan.craftingtable.entities;
 
 import com.karan.craftingtable.enums.MessageSenderRoleEnum;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,12 +13,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "t_chat_messages")
@@ -41,10 +46,14 @@ public class ChatMessageEntity extends AuditableBaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private MessageSenderRoleEnum messageSenderRole;
+    private MessageSenderRoleEnum messageSenderRole; // USER, ASSISTANT
+
+    @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("sequenceOrder ASC")
+    List<ChatEventEntity> chatEvents; // empty unless ASSISTANT role
 
     @Column(columnDefinition = "text", nullable = false)
-    private String content;
+    private String content; // null unless user role
 
     @Builder.Default
     private Integer tokensUsed = 0;

@@ -27,7 +27,7 @@ public class ProjectFileController {
 
     @GetMapping("/{*path}")
     public ResponseEntity<FileContentResponseDTO> getFile(@PathVariable Long projectId, @PathVariable String path) {
-        return new ResponseEntity<>(projectFileService.getFile(projectId), HttpStatus.OK);
+        return new ResponseEntity<>(projectFileService.getFileContent(projectId, path), HttpStatus.OK);
     }
 
 }

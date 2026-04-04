@@ -19,12 +19,8 @@ public class UsageController {
 
     @GetMapping("/today")
     public ResponseEntity<TodayUsageResponseDTO> getTodayUsage() {
-        return new ResponseEntity<>(usageService.getTodayUsage(), HttpStatus.OK);
-    }
-
-    @GetMapping("/limits")
-    public ResponseEntity<PlanLimitsResponseDTO> getCurrentPlanLimits() {
-        return new ResponseEntity<>(usageService.getCurrentPlanLimits(), HttpStatus.OK);
+//        return new ResponseEntity<>(usageService.getTodayUsage(), HttpStatus.OK);
+        return null;
     }
 
 }

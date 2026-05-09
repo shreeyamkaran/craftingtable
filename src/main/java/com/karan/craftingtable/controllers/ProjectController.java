@@ -36,10 +36,10 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<APIResponse<ProjectResponseDTO>> getProjectById(
+    public ResponseEntity<APIResponse<ProjectSummaryResponseDTO>> getProjectById(
             @PathVariable Long projectId
     ) {
-        ProjectResponseDTO response = projectService.getProjectById(projectId);
+        ProjectSummaryResponseDTO response = projectService.getProjectById(projectId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(APIResponse.success(response));

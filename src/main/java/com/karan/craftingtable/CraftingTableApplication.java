@@ -15,4 +15,5 @@ public class CraftingTableApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CraftingTableApplication.class, args);
 	}
+
 }

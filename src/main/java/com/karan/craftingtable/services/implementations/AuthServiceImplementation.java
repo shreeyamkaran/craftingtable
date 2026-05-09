@@ -7,6 +7,7 @@ import com.karan.craftingtable.exceptions.UnauthorizedException;
 import com.karan.craftingtable.mappers.UserMapper;
 import com.karan.craftingtable.models.requests.SignInRequestDTO;
 import com.karan.craftingtable.models.requests.SignUpRequestDTO;
+import com.karan.craftingtable.models.responses.AuthResponseDTO;
 import com.karan.craftingtable.models.responses.UserProfileResponseDTO;
 import com.karan.craftingtable.repositories.UserRepository;
 import com.karan.craftingtable.services.AuthService;
@@ -41,14 +42,15 @@ public class AuthServiceImplementation implements AuthService {
     }
 
     @Override
-    public String[] signIn(SignInRequestDTO signInRequestDTO) {
+    public AuthResponseDTO signIn(SignInRequestDTO signInRequestDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(signInRequestDTO.email(), signInRequestDTO.password())
         );
         UserEntity userEntity = (UserEntity) authentication.getPrincipal();
         String accessToken = jwtService.generateAccessToken(userEntity);
         String refreshToken = jwtService.generateRefreshToken(userEntity);
-        return new String[]{accessToken, refreshToken};
+        UserProfileResponseDTO userProfileResponseDTO = userMapper.toUserProfileResponseDTO(userEntity);
+        return new AuthResponseDTO(accessToken, refreshToken, userProfileResponseDTO);
     }
 
     @Override

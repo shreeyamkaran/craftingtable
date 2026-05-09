@@ -10,7 +10,7 @@ public interface ProjectService {
 
     List<ProjectSummaryResponseDTO> getAllProjects();
 
-    ProjectResponseDTO getProjectById(Long projectId);
+    ProjectSummaryResponseDTO getProjectById(Long projectId);
 
     ProjectResponseDTO createProject(ProjectRequestDTO projectRequestDTO);
 

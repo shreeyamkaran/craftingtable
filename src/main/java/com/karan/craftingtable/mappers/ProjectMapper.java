@@ -1,6 +1,7 @@
 package com.karan.craftingtable.mappers;
 
 import com.karan.craftingtable.entities.ProjectEntity;
+import com.karan.craftingtable.enums.ProjectMemberRoleEnum;
 import com.karan.craftingtable.models.responses.ProjectResponseDTO;
 import com.karan.craftingtable.models.responses.ProjectSummaryResponseDTO;
 import org.mapstruct.Mapper;
@@ -12,7 +13,7 @@ public interface ProjectMapper {
 
     ProjectResponseDTO toProjectResponseDTO(ProjectEntity projectEntity);
 
-    ProjectSummaryResponseDTO toProjectSummaryResponseDTO(ProjectEntity projectEntity);
+    ProjectSummaryResponseDTO toProjectSummaryResponseDTO(ProjectEntity projectEntity, ProjectMemberRoleEnum role);
 
     List<ProjectSummaryResponseDTO> toProjectSummaryResponseDTOList(List<ProjectEntity> projectEntityList);
 

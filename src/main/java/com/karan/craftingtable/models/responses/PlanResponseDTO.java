@@ -6,5 +6,5 @@ public record PlanResponseDTO(
         Integer maxProjects,
         Integer maxTokensPerDay,
         Boolean isUnlimitedAI,
-        Boolean isActive
+        String price
 ) { }

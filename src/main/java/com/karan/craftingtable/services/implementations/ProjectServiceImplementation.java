@@ -39,18 +39,20 @@ public class ProjectServiceImplementation implements ProjectService {
     @Override
     public List<ProjectSummaryResponseDTO> getAllProjects() {
         UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
-        List<ProjectEntity> projectEntities = projectRepository.findAllAccessibleProjects(currentLoggedInUser.getId());
-        return projectMapper.toProjectSummaryResponseDTOList(projectEntities);
+        List<ProjectRepository.ProjectWithRole> projectWithRoles = projectRepository.findAllAccessibleProjects(currentLoggedInUser.getId());
+        return projectWithRoles.stream()
+                .map(pwr -> projectMapper.toProjectSummaryResponseDTO(pwr.getProject(), pwr.getRole()))
+                .toList();
     }
 
     @Override
     @PreAuthorize("@permissionUtility.canViewProject(#projectId)")
-    public ProjectResponseDTO getProjectById(Long projectId) {
+    public ProjectSummaryResponseDTO getProjectById(Long projectId) {
         UserEntity currentLoggedInUser = authService.getCurrentLoggedInUser();
-        ProjectEntity projectEntity =
-                projectRepository.findAccessibleProjectById(projectId, currentLoggedInUser.getId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Project not found with id " + projectId));
-        return projectMapper.toProjectResponseDTO(projectEntity);
+        ProjectRepository.ProjectWithRole projectWithRole =
+                projectRepository.findAccessibleProjectByIdWithRole(projectId, currentLoggedInUser.getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Project with id " + projectId + " not found"));
+        return projectMapper.toProjectSummaryResponseDTO(projectWithRole.getProject(), projectWithRole.getRole());
     }
 
     @Override

@@ -41,11 +41,10 @@ public class AuthController {
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse
     ){
-        String[] tokens = authService.signIn(signInRequestDTO);
-        Cookie cookie = new Cookie("refresh_token", tokens[1]);
+        AuthResponseDTO response = authService.signIn(signInRequestDTO);
+        Cookie cookie = new Cookie("refresh_token", response.refreshToken());
         cookie.setHttpOnly(true);
         httpServletResponse.addCookie(cookie);
-        AuthResponseDTO response = new AuthResponseDTO(tokens[0]);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(APIResponse.success(response));

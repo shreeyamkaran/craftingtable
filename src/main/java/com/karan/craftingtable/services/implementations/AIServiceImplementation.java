@@ -55,6 +55,7 @@ public class AIServiceImplementation implements AIService {
     @Override
     @PreAuthorize("@permissionUtility.canEditProject(#projectId)")
     public Flux<StreamResponseDTO> streamResponses(String userPrompt, Long projectId) {
+//        usageService.checkDailyTokensUsage();
         UserEntity currentLoggedUser = authService.getCurrentLoggedInUser();
         Long userId = currentLoggedUser.getId();
         // Create a chat session if it does not exist already
@@ -91,7 +92,6 @@ public class AIServiceImplementation implements AIService {
                 })
                 .doOnComplete(() -> {
                     Schedulers.boundedElastic().schedule(() -> {
-//                        parseAndSaveFiles(completeResponseBuffer.toString(), projectId);
                         long duration = (endTime.get() - startTime.get()) /  1000;
                         finalizeChats(userPrompt, chatSession, completeResponseBuffer.toString(), duration, usageRef.get());
                     });
@@ -117,7 +117,7 @@ public class AIServiceImplementation implements AIService {
                         .chatSession(chatSession)
                         .messageSenderRole(MessageSenderRoleEnum.USER)
                         .content(userMessage)
-                        .tokensUsed(usage.getPromptTokens())
+                        .tokensUsed(usage != null ? usage.getPromptTokens() : null)
                         .build()
         );
 
@@ -125,7 +125,7 @@ public class AIServiceImplementation implements AIService {
                 .messageSenderRole(MessageSenderRoleEnum.ASSISTANT)
                 .content("Assistant message here...")
                 .chatSession(chatSession)
-                .tokensUsed(usage.getCompletionTokens())
+                .tokensUsed(usage != null ? usage.getCompletionTokens() : null)
                 .build();
 
         assistantChatMessage = chatMessageRepository.save(assistantChatMessage);

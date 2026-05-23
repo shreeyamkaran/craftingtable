@@ -1,9 +1,11 @@
 package com.karan.craftingtable.controllers;
 
 import com.karan.craftingtable.models.requests.ProjectRequestDTO;
+import com.karan.craftingtable.models.responses.DeploymentResponseDTO;
 import com.karan.craftingtable.models.responses.ProjectResponseDTO;
 import com.karan.craftingtable.models.responses.ProjectSummaryResponseDTO;
 import com.karan.craftingtable.models.wrappers.APIResponse;
+import com.karan.craftingtable.services.DeploymentService;
 import com.karan.craftingtable.services.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final DeploymentService deploymentService;
 
     @GetMapping("/all")
     public ResponseEntity<APIResponse<List<ProjectSummaryResponseDTO>>> getAllProjects() {
@@ -73,6 +76,16 @@ public class ProjectController {
         Void response = projectService.softDeleteProjectById(projectId);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
+                .body(APIResponse.success(response));
+    }
+
+    @PostMapping("/{projectId}/deploy")
+    public ResponseEntity<APIResponse<DeploymentResponseDTO>> deployProject(
+            @PathVariable Long projectId
+    ) {
+        DeploymentResponseDTO response = deploymentService.deploy(projectId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(APIResponse.success(response));
     }
 
